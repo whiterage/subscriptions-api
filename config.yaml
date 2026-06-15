@@ -1,0 +1,6 @@
+http:
+  addr: ":8080"
+database:
+  url: ""
+auth:
+  api_key: ""

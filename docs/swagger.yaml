@@ -1,0 +1,245 @@
+openapi: 3.0.3
+info:
+  title: Effective Mobile Subscriptions API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+  /subscriptions:
+    post:
+      summary: Create subscription
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInput"
+            example:
+              service_name: Yandex Plus
+              price: 400
+              user_id: 60601fee-2bf1-4721-ae6f-7636e79a0cba
+              start_date: 07-2025
+      responses:
+        "201":
+          description: Created subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    get:
+      summary: List subscriptions
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UserID"
+        - $ref: "#/components/parameters/ServiceName"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        "200":
+          description: Subscriptions list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Subscription"
+  /subscriptions/total:
+    get:
+      summary: Calculate total subscription cost for period
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^\\d{2}-\\d{4}$"
+          example: 07-2025
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: "^\\d{2}-\\d{4}$"
+          example: 09-2025
+        - $ref: "#/components/parameters/UserID"
+        - $ref: "#/components/parameters/ServiceName"
+      responses:
+        "200":
+          description: Total price in rubles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    format: int64
+                    example: 1200
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /subscriptions/{id}:
+    get:
+      summary: Get subscription by id
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ID"
+      responses:
+        "200":
+          description: Subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      summary: Update subscription
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInput"
+      responses:
+        "200":
+          description: Updated subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      summary: Delete subscription
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ID"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    ID:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    UserID:
+      name: user_id
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uuid
+    ServiceName:
+      name: service_name
+      in: query
+      required: false
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Subscription not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    SubscriptionInput:
+      type: object
+      required:
+        - service_name
+        - price
+        - user_id
+        - start_date
+      properties:
+        service_name:
+          type: string
+          example: Yandex Plus
+        price:
+          type: integer
+          minimum: 1
+          example: 400
+        user_id:
+          type: string
+          format: uuid
+          example: 60601fee-2bf1-4721-ae6f-7636e79a0cba
+        start_date:
+          type: string
+          pattern: "^\\d{2}-\\d{4}$"
+          example: 07-2025
+        end_date:
+          type: string
+          nullable: true
+          pattern: "^\\d{2}-\\d{4}$"
+          example: 12-2025
+    Subscription:
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionInput"
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
