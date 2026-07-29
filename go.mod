@@ -1,4 +1,4 @@
-module effective-mobile-subscriptions
+module github.com/whiterage/subscriptions-api
 
 go 1.25.0
 

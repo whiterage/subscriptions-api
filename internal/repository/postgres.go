@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"effective-mobile-subscriptions/internal/service"
+	"github.com/whiterage/subscriptions-api/internal/service"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"effective-mobile-subscriptions/internal/config"
-	"effective-mobile-subscriptions/internal/httpapi"
-	"effective-mobile-subscriptions/internal/migrations"
-	"effective-mobile-subscriptions/internal/repository"
-	"effective-mobile-subscriptions/internal/service"
+	"github.com/whiterage/subscriptions-api/internal/config"
+	"github.com/whiterage/subscriptions-api/internal/httpapi"
+	"github.com/whiterage/subscriptions-api/internal/migrations"
+	"github.com/whiterage/subscriptions-api/internal/repository"
+	"github.com/whiterage/subscriptions-api/internal/service"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"effective-mobile-subscriptions/internal/service"
+	"github.com/whiterage/subscriptions-api/internal/service"
 )
 
 func TestProtectedRoutesRequireAPIKey(t *testing.T) {

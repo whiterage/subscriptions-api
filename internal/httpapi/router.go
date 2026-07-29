@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"effective-mobile-subscriptions/internal/service"
+	"github.com/whiterage/subscriptions-api/internal/service"
 )
 
 const maxJSONBodyBytes = 1 << 20
