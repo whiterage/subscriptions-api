@@ -1,34 +1,34 @@
-# Effective Mobile Subscriptions
+# Subscriptions API
 
-REST-сервис для агрегации данных об онлайн-подписках пользователей.
+A REST service for aggregating user subscription data.
 
-## Возможности
+## Features
 
-- CRUDL подписок.
-- Подсчет суммарной стоимости подписок за период с фильтрацией по `user_id` и `service_name`.
-- PostgreSQL и SQL-миграции.
-- JSON-логи через `slog`.
-- Конфигурация через переменные окружения или `config.yaml`.
-- OpenAPI/Swagger-документация.
-- Запуск через Docker Compose.
+- CRUDL for subscriptions.
+- Cost roll-up over a date range, filterable by `user_id` and `service_name`.
+- PostgreSQL with SQL migrations.
+- JSON logging via `slog`.
+- Configuration via environment variables or `config.yaml`.
+- OpenAPI/Swagger docs.
+- Runs via Docker Compose.
 
-## Запуск
+## Running it
 
 ```bash
 cp .env.example .env
-# перед запуском замените POSTGRES_PASSWORD и API_KEY на случайные значения
+# replace POSTGRES_PASSWORD and API_KEY with random values before starting
 docker compose up --build
 ```
 
-API будет доступно на `http://localhost:8080`.
+The API is available on `http://localhost:8080`.
 
 Swagger YAML: `http://localhost:8080/swagger/doc.yaml`.
 
-Все бизнес-ручки требуют заголовок `X-API-Key` со значением из `API_KEY`.
+Every business endpoint requires an `X-API-Key` header matching `API_KEY`.
 
-## Примеры
+## Examples
 
-Создание подписки:
+Create a subscription:
 
 ```bash
 curl -X POST http://localhost:8080/subscriptions \
@@ -42,24 +42,24 @@ curl -X POST http://localhost:8080/subscriptions \
   }'
 ```
 
-Список:
+List:
 
 ```bash
 curl -H "X-API-Key: $API_KEY" \
   'http://localhost:8080/subscriptions?user_id=60601fee-2bf1-4721-ae6f-7636e79a0cba&limit=20&offset=0'
 ```
 
-Сумма за период:
+Total cost over a range:
 
 ```bash
 curl -H "X-API-Key: $API_KEY" \
   'http://localhost:8080/subscriptions/total?from=07-2025&to=09-2025&user_id=60601fee-2bf1-4721-ae6f-7636e79a0cba&service_name=Yandex'
 ```
 
-Период считается включительно по месяцам. Если подписка активна в трех месяцах выбранного периода, ее цена учитывается три раза.
-Максимальный период для подсчета суммы — 36 месяцев.
+The range is inclusive by month — a subscription active across three months of the selected
+period is counted three times. The maximum range for a total is 36 months.
 
-## Локальная разработка
+## Local development
 
 ```bash
 go test ./...
